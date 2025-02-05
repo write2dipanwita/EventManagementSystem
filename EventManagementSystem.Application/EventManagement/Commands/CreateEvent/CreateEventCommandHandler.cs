@@ -4,13 +4,9 @@ using EventManagementSystem.Application.EventManagement.DTOs;
 using EventManagementSystem.Core.EventManagement.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Extensions.Logging;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventManagementSystem.Application.EventManagement.Commands.CreateEvent
 {
@@ -19,21 +15,32 @@ namespace EventManagementSystem.Application.EventManagement.Commands.CreateEvent
 		private readonly IEventRepository _eventRepository;
 		private readonly IMapper _mapper;
 		private readonly IHttpContextAccessor _httpContextAccessor;
-		public CreateEventCommandHandler(IEventRepository eventRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+		private readonly ILogger<CreateEventCommandHandler> _logger;
+
+		public CreateEventCommandHandler(
+			IEventRepository eventRepository,
+			IMapper mapper,
+			IHttpContextAccessor httpContextAccessor,
+			ILogger<CreateEventCommandHandler> logger)
 		{
 			_eventRepository = eventRepository;
 			_mapper = mapper;
 			_httpContextAccessor = httpContextAccessor;
+			_logger = logger;
 		}
-
 		public async Task<EventDTO> Handle(CreateEventCommand request, CancellationToken cancellationToken)
 		{
 			var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			if (string.IsNullOrEmpty(userId))
+			{
+				throw new UnauthorizedAccessException("User not authenticated.");
+			}
 
 			if (request.StartTime >= request.EndTime)
 			{
-				throw new ArgumentException("Start time must be before end time.");
-			}
+				throw new ValidationException("Start time must be before end time.");
+			}			
+
 			var eventEntity = new Event(
 				request.Name,
 				request.Description,
@@ -42,8 +49,11 @@ namespace EventManagementSystem.Application.EventManagement.Commands.CreateEvent
 				request.EndTime,
 				userId
 			);
+
 			await _eventRepository.AddAsync(eventEntity);
 			return _mapper.Map<EventDTO>(eventEntity);
 		}
+
+		
 	}
 }

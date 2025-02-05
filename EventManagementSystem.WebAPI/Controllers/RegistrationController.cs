@@ -1,9 +1,9 @@
-﻿
-using EventManagementSystem.Application.RegistrationManagement.Commands;
+﻿using EventManagementSystem.Application.RegistrationManagement.Commands;
 using EventManagementSystem.Application.RegistrationManagement.Queries.GetRegistrationsByEventId;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventManagementSystem.WebAPI.Controllers
 {
@@ -12,47 +12,49 @@ namespace EventManagementSystem.WebAPI.Controllers
 	public class RegistrationController : ControllerBase
 	{
 		private readonly IMediator _mediator;
+		private readonly ILogger<RegistrationController> _logger;
 
-		public RegistrationController(IMediator mediator)
+		public RegistrationController(IMediator mediator, ILogger<RegistrationController> logger)
 		{
 			_mediator = mediator;
+			_logger = logger;
 		}
+
+		
 		[HttpGet("{eventId}/registrations")]
-		[Authorize(Roles = "Admin")]
-		public async Task<IActionResult> GetRegistrationsByEventId(int eventId)
+		[Authorize(Roles = "Admin")] 
+		public async Task<IActionResult> GetRegistrationsByEventId([FromRoute, Range(1, int.MaxValue, ErrorMessage = "Event ID must be greater than zero.")] int eventId)
 		{
-			try
-			{
-				var registrations = await _mediator.Send(new GetRegistrationsByEventIdQuery(eventId));
+			_logger.LogInformation("Retrieving registrations for event ID {EventId}.", eventId);
 
-				if (registrations == null || !registrations.Any())
-					return NotFound($"No registrations found for event {eventId}.");
+			var registrations = await _mediator.Send(new GetRegistrationsByEventIdQuery(eventId));
 
-				return Ok(registrations);
-			}
-			catch (Exception ex)
+			if (registrations == null || !registrations.Any())
 			{
-				//_logger.LogError(ex, $"Error retrieving registrations for event {eventId}");
-				return StatusCode(500, "An error occurred while retrieving registrations.");
+				_logger.LogWarning("No registrations found for event ID {EventId}.", eventId);
+				return NotFound($"No registrations found for event {eventId}.");
 			}
+
+			_logger.LogInformation("Retrieved {Count} registrations for event ID {EventId}.", registrations.Count(), eventId);
+			return Ok(registrations);
 		}
+
+		
 		[HttpPost("{eventId}/register")]
 		[AllowAnonymous] 
-		public async Task<IActionResult> RegisterForEvent(int eventId, [FromBody] RegisterForEventCommand command)
+		public async Task<IActionResult> RegisterForEvent([FromRoute, Range(1, int.MaxValue, ErrorMessage = "Event ID must be greater than zero.")] int eventId,
+			[FromBody, Required] RegisterForEventCommand command)
 		{
-			try
-			{
-				var registerCommand = new RegisterForEventCommand(eventId, command.Name, command.PhoneNumber, command.Email);
+			_logger.LogInformation("Received registration request for event ID {EventId} from {UserName}.", eventId, command.Name);
 
-				var registration = await _mediator.Send(registerCommand);
+			var registerCommand = new RegisterForEventCommand(eventId, command.Name, command.PhoneNumber, command.Email);
+			var registration = await _mediator.Send(registerCommand);
 
-				return CreatedAtAction(nameof(GetRegistrationsByEventId), new { eventId }, registration);
-			}
-			catch (Exception ex)
-			{
-				//_logger.LogError(ex, $"Error registering for event {eventId}");
-				return StatusCode(500, "An error occurred while processing your registration.");
-			}
+			_logger.LogInformation("User {UserName} successfully registered for event ID {EventId}.", command.Name, eventId);
+
+			return CreatedAtAction(nameof(GetRegistrationsByEventId), new { eventId }, registration);
+
+
 		}
 	}
 }

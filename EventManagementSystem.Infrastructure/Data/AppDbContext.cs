@@ -17,22 +17,17 @@ namespace EventManagementSystem.Infrastructure.Persistance
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			base.OnModelCreating(modelBuilder); // ✅ Ensures Identity Tables are Configured Properly
-
-			// 🔹 Ensure `CreatedBy` is Required in Events
+			base.OnModelCreating(modelBuilder);
 			modelBuilder.Entity<Event>()
 			   .Property(e => e.CreatedBy)
 			   .IsRequired();
 
 
-			// 🔹 Define Foreign Key for `Registrations` with `Cascade Delete`
 			modelBuilder.Entity<Registration>()
 				.HasOne(r => r.Event)
 				.WithMany()
 				.HasForeignKey(r => r.EventId)
-				.OnDelete(DeleteBehavior.Cascade); // ✅ Ensures cascading delete
-
-			// 🔹 Apply Any Additional Configurations from the Assembly
+				.OnDelete(DeleteBehavior.Cascade); 
 			modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 		}
 	}

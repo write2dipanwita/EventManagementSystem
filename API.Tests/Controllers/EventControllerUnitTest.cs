@@ -1,6 +1,6 @@
 ﻿using EventManagementSystem.Application.EventManagement.Commands.CreateEvent;
 using EventManagementSystem.Application.EventManagement.DTOs;
-using EventManagementSystem.Application.EventManagement.Queries.GetALLEvents;
+using EventManagementSystem.Application.EventManagement.Services;
 using EventManagementSystem.Core.EventManagement.Entities;
 using EventManagementSystem.WebAPI.Controllers;
 using MediatR;
@@ -17,13 +17,15 @@ namespace API.Tests.Controllers
 	{
 		private readonly Mock<IMediator> _mockMediator;
 		private readonly Mock<ILogger<EventController>> _mockLogger;
+		private readonly Mock<IEventService> _mockeventService;
 		private readonly EventController _controller;
 
 		public EventControllerTests()
 		{
 			_mockMediator = new Mock<IMediator>();
 			_mockLogger = new Mock<ILogger<EventController>>();
-			_controller = new EventController(_mockMediator.Object, _mockLogger.Object);
+			_mockeventService = new Mock<IEventService>();
+			_controller = new EventController(_mockMediator.Object, _mockLogger.Object, _mockeventService.Object);
 		}
 
 		// ✅ Test: GetAllEvents() - Should Return 200 OK with Events
@@ -37,8 +39,8 @@ namespace API.Tests.Controllers
 				new EventDTO { Id = 2, Name = "AI Conference", Description = "AI & ML Talks" }
 			};
 
-			_mockMediator.Setup(m => m.Send(It.IsAny<GetAllEventsQuery>(), default))
-						 .ReturnsAsync(events);
+			//_mockMediator.Setup(m => m.Send(It.IsAny<GetAllEventsQuery>(), default))
+					//	 .ReturnsAsync(events);
 
 			// Act
 			var result = await _controller.GetAllEvents();
@@ -54,8 +56,8 @@ namespace API.Tests.Controllers
 		public async Task GetAllEvents_ReturnsNotFound_WhenNoEventsExist()
 		{
 			// Arrange
-			_mockMediator.Setup(m => m.Send(It.IsAny<GetAllEventsQuery>(), default))
-						 .ReturnsAsync(new List<EventDTO>());
+			//_mockMediator.Setup(m => m.Send(It.IsAny<GetAllEventsQuery>(), default))
+				//		 .ReturnsAsync(new List<EventDTO>());
 
 			// Act
 			var result = await _controller.GetAllEvents();
@@ -69,8 +71,8 @@ namespace API.Tests.Controllers
 		public async Task GetAllEvents_ReturnsInternalServerError_OnException()
 		{
 			// Arrange
-			_mockMediator.Setup(m => m.Send(It.IsAny<GetAllEventsQuery>(), default))
-						 .ThrowsAsync(new Exception("Database error"));
+			//_mockMediator.Setup(m => m.Send(It.IsAny<GetAllEventsQuery>(), default))
+				//		 .ThrowsAsync(new Exception("Database error"));
 
 			// Act
 			var result = await _controller.GetAllEvents();

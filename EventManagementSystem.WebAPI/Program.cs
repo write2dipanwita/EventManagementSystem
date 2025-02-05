@@ -1,5 +1,4 @@
-﻿using EventManagementSystem.Application.EventManagement.Queries.GetALLEvents;
-using MediatR;
+﻿
 using EventManagementSystem.Application;
 using EventManagementSystem.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -9,11 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using EventManagementSystem.API.Middleware;
+using EventManagementSystem.Application.EventManagement.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllEventsQuery).Assembly));
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddControllers();
 // ✅ Configure Swagger for JWT Authentication
@@ -46,7 +46,7 @@ builder.Services.AddSwaggerGen(c =>
 		}
 	});
 });
-
+builder.Services.AddScoped<IEventService, EventService>();
 
 var app = builder.Build();
 
@@ -72,7 +72,7 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
