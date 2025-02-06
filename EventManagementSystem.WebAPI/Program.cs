@@ -14,7 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
-
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowAll",
+		policy =>
+		{
+			policy.AllowAnyOrigin()
+				  .AllowAnyMethod()
+				  .AllowAnyHeader();
+		});
+});
 builder.Services.AddControllers();
 // ✅ Configure Swagger for JWT Authentication
 builder.Services.AddSwaggerGen(c =>
@@ -67,7 +76,7 @@ if (app.Environment.IsDevelopment())
 			logger.LogError(ex, "An error occurred while applying migrations.");
 		}
 	}
-
+	app.UseCors("AllowAll");
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }

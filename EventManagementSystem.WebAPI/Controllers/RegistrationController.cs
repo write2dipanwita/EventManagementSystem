@@ -40,17 +40,17 @@ namespace EventManagementSystem.WebAPI.Controllers
 		}
 
 		
-		[HttpPost("{eventId}/register")]
+		[HttpPost("register")]
 		[AllowAnonymous] 
-		public async Task<IActionResult> RegisterForEvent(int eventId, [FromBody] RegisterForEventCommand registerCommand)
+		public async Task<IActionResult> RegisterForEvent([FromBody] RegisterForEventCommand registerCommand)
 		{
-			_logger.LogInformation("Received registration request for event ID {EventId} from {UserName}.", eventId, registerCommand.Name);
+			_logger.LogInformation("Received registration request for event ID {EventId} from {UserName}.", registerCommand.EventId, registerCommand.Name);
 
 			var registration = await _mediator.Send(registerCommand);
 
-			_logger.LogInformation("User {UserName} successfully registered for event ID {EventId}.", registerCommand.Name, eventId);
+			_logger.LogInformation("User successfully registered for event ID {EventId}.", registerCommand.EventId);
 
-			return CreatedAtAction(nameof(GetRegistrationsByEventId), new { eventId }, registration);
+			return CreatedAtAction(nameof(GetRegistrationsByEventId), new { registerCommand.EventId }, registration);
 
 
 		}
