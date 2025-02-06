@@ -128,5 +128,4 @@ Add email notifications for registrations
 
 Add event reminders & calendar integration
 
-🚀 Developed by: Dipanwita Roy🔗 GitHub: EventManagement Repo
 
