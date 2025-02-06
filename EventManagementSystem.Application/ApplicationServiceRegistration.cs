@@ -1,4 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using EventManagementSystem.Application.Common.Behaviors;
+using EventManagementSystem.Application.EventManagement.Commands.CreateEvent;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 namespace EventManagementSystem.Application
 {
@@ -8,6 +13,10 @@ namespace EventManagementSystem.Application
 		{
 			services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 			services.AddAutoMapper(Assembly.GetExecutingAssembly());
+			services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+			services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>));
+
 			return services;
 		}
 	}

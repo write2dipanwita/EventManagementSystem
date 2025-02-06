@@ -1,6 +1,5 @@
 ﻿using EventManagementSystem.Application.EventManagement.Commands.CreateEvent;
 using EventManagementSystem.Application.EventManagement.DTOs;
-using EventManagementSystem.Application.EventManagement.Services;
 using EventManagementSystem.Core.EventManagement.Entities;
 using EventManagementSystem.WebAPI.Controllers;
 using MediatR;
@@ -17,15 +16,13 @@ namespace API.Tests.Controllers
 	{
 		private readonly Mock<IMediator> _mockMediator;
 		private readonly Mock<ILogger<EventController>> _mockLogger;
-		private readonly Mock<IEventService> _mockeventService;
 		private readonly EventController _controller;
 
 		public EventControllerTests()
 		{
 			_mockMediator = new Mock<IMediator>();
 			_mockLogger = new Mock<ILogger<EventController>>();
-			_mockeventService = new Mock<IEventService>();
-			_controller = new EventController(_mockMediator.Object, _mockLogger.Object, _mockeventService.Object);
+			_controller = new EventController(_mockMediator.Object, _mockLogger.Object);
 		}
 
 		// ✅ Test: GetAllEvents() - Should Return 200 OK with Events
@@ -87,7 +84,7 @@ namespace API.Tests.Controllers
 		public async Task CreateEvent_ReturnsCreated_WhenEventIsValid()
 		{
 			// Arrange
-			var command = new CreateEventCommand { Name = "Tech Meetup", Description = "Networking Event" };
+			//var command = new CreateEventCommand { Name = "Tech Meetup", Description = "Networking Event" };
 			var createdEvent = new EventDTO { Id = 1, Name = "Tech Meetup", Description = "Networking Event" };
 
 			_mockMediator.Setup(m => m.Send(It.IsAny<CreateEventCommand>(), default))
@@ -105,7 +102,7 @@ namespace API.Tests.Controllers
 			};
 
 			// Act
-			var result = await _controller.CreateEvent(command);
+			var result = await _controller.CreateEvent(null);
 
 			// Assert
 			var createdResult = Assert.IsType<CreatedAtActionResult>(result);
@@ -118,7 +115,7 @@ namespace API.Tests.Controllers
 		public async Task CreateEvent_ReturnsUnauthorized_WhenUserNotAuthenticated()
 		{
 			// Arrange
-			var command = new CreateEventCommand { Name = "Tech Meetup", Description = "Networking Event" };
+			//var command = new CreateEventCommand { Name = "Tech Meetup", Description = "Networking Event" };
 
 			// No user context set (unauthenticated)
 			_controller.ControllerContext = new ControllerContext
@@ -127,7 +124,7 @@ namespace API.Tests.Controllers
 			};
 
 			// Act
-			var result = await _controller.CreateEvent(command);
+			var result = await _controller.CreateEvent(null);
 
 			// Assert
 			var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);

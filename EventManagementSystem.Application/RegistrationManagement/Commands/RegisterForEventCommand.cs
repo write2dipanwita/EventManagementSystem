@@ -1,29 +1,16 @@
 ﻿using EventManagementSystem.Application.RegistrationManagement.DTOs;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventManagementSystem.Application.RegistrationManagement.Commands
 {
 	public class RegisterForEventCommand : IRequest<RegistrationDTO>
 	{
-		public int EventId { get; private set; } 
+		public int EventId { get; set; }  
 		public string Name { get; set; }
 		public string PhoneNumber { get; set; }
 		public string Email { get; set; }
-
 		
-		public RegisterForEventCommand(int eventId, string name, string phoneNumber, string email)
-		{
-			EventId = eventId;
-			Name = name;
-			PhoneNumber = phoneNumber;
-			Email = email;
-		}
 	}
-
-
 }

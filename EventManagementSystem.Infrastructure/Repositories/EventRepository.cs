@@ -19,10 +19,20 @@ namespace EventManagementSystem.Infrastructure.Repositories
 			_logger = logger;
 		}
 
-		
+		public async Task<bool> EventExistsAsync(string name, DateTime startTime, string location)
+		{
+			return await _context.Events
+				.AnyAsync(e => e.Name == name && e.StartTime == startTime && e.Location == location);
+		}
+
+
 		public async Task<Event> AddAsync(Event newEvent)
 		{
 			_logger.LogInformation("Adding new event: {EventName}", newEvent.Name);
+			if (await EventExistsAsync(newEvent.Name, newEvent.StartTime, newEvent.Location))
+			{
+				throw new InvalidOperationException("An event with the same name, location, and start time already exists.");
+			}
 
 			_context.Events.Add(newEvent);
 			await _context.SaveChangesAsync();

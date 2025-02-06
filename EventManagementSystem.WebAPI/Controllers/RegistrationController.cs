@@ -23,7 +23,7 @@ namespace EventManagementSystem.WebAPI.Controllers
 		
 		[HttpGet("{eventId}/registrations")]
 		[Authorize(Roles = "Admin")] 
-		public async Task<IActionResult> GetRegistrationsByEventId([FromRoute, Range(1, int.MaxValue, ErrorMessage = "Event ID must be greater than zero.")] int eventId)
+		public async Task<IActionResult> GetRegistrationsByEventId(int eventId)
 		{
 			_logger.LogInformation("Retrieving registrations for event ID {EventId}.", eventId);
 
@@ -42,15 +42,13 @@ namespace EventManagementSystem.WebAPI.Controllers
 		
 		[HttpPost("{eventId}/register")]
 		[AllowAnonymous] 
-		public async Task<IActionResult> RegisterForEvent([FromRoute, Range(1, int.MaxValue, ErrorMessage = "Event ID must be greater than zero.")] int eventId,
-			[FromBody, Required] RegisterForEventCommand command)
+		public async Task<IActionResult> RegisterForEvent(int eventId, [FromBody] RegisterForEventCommand registerCommand)
 		{
-			_logger.LogInformation("Received registration request for event ID {EventId} from {UserName}.", eventId, command.Name);
+			_logger.LogInformation("Received registration request for event ID {EventId} from {UserName}.", eventId, registerCommand.Name);
 
-			var registerCommand = new RegisterForEventCommand(eventId, command.Name, command.PhoneNumber, command.Email);
 			var registration = await _mediator.Send(registerCommand);
 
-			_logger.LogInformation("User {UserName} successfully registered for event ID {EventId}.", command.Name, eventId);
+			_logger.LogInformation("User {UserName} successfully registered for event ID {EventId}.", registerCommand.Name, eventId);
 
 			return CreatedAtAction(nameof(GetRegistrationsByEventId), new { eventId }, registration);
 

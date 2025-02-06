@@ -1,5 +1,5 @@
 ﻿
-using EventManagementSystem.Application.DTOs;
+using EventManagementSystem.Application.IdentityManagement;
 using EventManagementSystem.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -29,11 +29,9 @@ namespace EventManagementSystem.WebAPI.Controllers
 		}
 
 		[HttpPost("login")]
-		public async Task<IActionResult> Login([FromBody, Required] UserDTO model)
+		public async Task<IActionResult> Login([FromBody, Required] LoginRequest model)
 		{
 			_logger.LogInformation("Login attempt for username: {Username}", model.Username);
-			if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
-				return BadRequest("Username and password are required.");
 
 			var user = await _userManager.FindByNameAsync(model.Username);
 			if (user == null) return Unauthorized("Invalid username or password");
@@ -41,14 +39,12 @@ namespace EventManagementSystem.WebAPI.Controllers
 			if (await _userManager.IsLockedOutAsync(user))
 				return Unauthorized("Your account is temporarily locked due to multiple failed login attempts. Please try again later.");
 
-
 			var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
 			if (!result.Succeeded)
 			{
 				await _userManager.AccessFailedAsync(user);
 				return Unauthorized("Invalid username or password");
 			}
-
 
 			var token = await GenerateJwtToken(user);
 			return Ok(new { Token = token });

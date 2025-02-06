@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using EventManagementSystem.API.Middleware;
-using EventManagementSystem.Application.EventManagement.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
 builder.Services.AddControllers();
 // ✅ Configure Swagger for JWT Authentication
 builder.Services.AddSwaggerGen(c =>
@@ -46,7 +46,6 @@ builder.Services.AddSwaggerGen(c =>
 		}
 	});
 });
-builder.Services.AddScoped<IEventService, EventService>();
 
 var app = builder.Build();
 

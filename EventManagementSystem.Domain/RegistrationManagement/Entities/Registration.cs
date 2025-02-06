@@ -13,9 +13,7 @@ namespace EventManagementSystem.Core.RegistrationManagement.Entities
 		public int EventId { get; private set; }  
 		public string Name { get; private set; }
 		public string Email { get; private set; }
-		public string Phone { get; private set; }
-
-	
+		public string Phone { get; private set; }	
 		public Event Event { get; private set; }
 
 		private Registration() { } // Required for EF Core
