@@ -26,20 +26,13 @@ namespace EventManagementSystem.WebAPI.Controllers
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<EventDTO>>> GetAllEvents()
 		{
-			try
-			{
-				var events = await _mediator.Send(new GetAllEventsQuery());
+			_logger.LogInformation("Get All events called");
+			var events = await _mediator.Send(new GetAllEventsQuery());
 
-				if (events == null || !events.Any())
-					return NotFound("No events found.");
+			if (events == null || !events.Any())
+				return NotFound("No events found.");
 
-				return Ok(events);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error retrieving events.");
-				return StatusCode(500, "An error occurred while retrieving events.");
-			}
+			return Ok(events);
 
 		}
 
