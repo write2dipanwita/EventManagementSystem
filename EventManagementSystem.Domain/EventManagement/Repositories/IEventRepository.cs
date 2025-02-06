@@ -11,5 +11,6 @@ namespace EventManagementSystem.Application.Common.Interfaces
 	{
 		Task<IEnumerable<Event>> GetAllAsync();
 		Task<Event> AddAsync(Event newEvent);
+		Task<bool> EventExistsAsync(string name, DateTime startTime, string location);
 	}
 }

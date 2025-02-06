@@ -5,12 +5,12 @@ using MediatR;
 
 namespace EventManagementSystem.Application.EventManagement.Queries.GetALLEvents
 {
-	public class GetRegistrationsByEventIdQueryHandler : IRequestHandler<GetAllEventsQuery, IEnumerable<EventDTO>>
+	public class GetAllEventsQueryHandler : IRequestHandler<GetAllEventsQuery, IEnumerable<EventDTO>>
 	{
 		private readonly IEventRepository _eventRepository;
 		private readonly IMapper _mapper;
 
-		public GetRegistrationsByEventIdQueryHandler(IEventRepository eventRepository, IMapper mapper)
+		public GetAllEventsQueryHandler(IEventRepository eventRepository, IMapper mapper)
 		{
 			_eventRepository = eventRepository;
 			_mapper = mapper;

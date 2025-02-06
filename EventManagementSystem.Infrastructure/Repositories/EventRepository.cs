@@ -18,7 +18,7 @@ namespace EventManagementSystem.Infrastructure.Repositories
 			_context = context;
 			_logger = logger;
 		}
-
+		
 		public async Task<bool> EventExistsAsync(string name, DateTime startTime, string location)
 		{
 			return await _context.Events
@@ -57,7 +57,6 @@ namespace EventManagementSystem.Infrastructure.Repositories
 			return events;
 		}
 
-		
 		
 	}
 }
