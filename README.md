@@ -16,17 +16,6 @@ Infrastructure: Entity Framework Core
 
 Architecture: CQRS, Domain-Driven Design (DDD), Repository Pattern
 
-📌 Project Structure
-
-EventManagementSystem/
-│── EventManagement.Tests/                         # Unit & Integration Tests
-│── EventManagementSystem.Application/  # Application Layer (CQRS, DTOs, Services)
-│── EventManagementSystem.Domain/       # Domain Layer (Entities )
-│── EventManagementSystem.Infrastructure/ # Data Layer (EF Core, DB Context, Repositories)
-│── EventManagementSystem.WebAPI/       # API Layer (Controllers, Middleware)
-│── README.md                           # Documentation
-│── EventManagementSystem.sln           # Solution File
-
 📌 Features
 
 1️⃣ Authentication
@@ -111,7 +100,7 @@ GET /api/registrations/{eventId}/registrations (Get all registrations)
 
 1️⃣ Clone the Repository
 
-git clone https://github.com/write2dipanwita/EventManagement.git
+git clone https://github.com/write2dipanwita/EventManagementSystem.git
 cd EventManagementSystem
 
 2️⃣ Install Dependencies
