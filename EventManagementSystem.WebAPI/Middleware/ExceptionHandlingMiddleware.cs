@@ -38,7 +38,7 @@ namespace EventManagementSystem.API.Middleware
 				UnauthorizedAccessException => new ErrorResponse("Unauthorized", exception.Message, (int)HttpStatusCode.Unauthorized),
 				KeyNotFoundException => new ErrorResponse("Not Found", exception.Message, (int)HttpStatusCode.NotFound),
 				ApplicationException => new ErrorResponse("Application error", exception.Message, (int)HttpStatusCode.BadRequest),
-				_ => new ErrorResponse("Internal Server Error", "An unexpected error occurred.", (int)HttpStatusCode.InternalServerError)
+				_ => new ErrorResponse("Internal Server Error",exception.Message, (int)HttpStatusCode.InternalServerError)
 			};
 
 			context.Response.StatusCode = response.StatusCode;

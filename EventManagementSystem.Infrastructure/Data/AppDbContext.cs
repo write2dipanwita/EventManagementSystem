@@ -21,13 +21,11 @@ namespace EventManagementSystem.Infrastructure.Persistance
 			modelBuilder.Entity<Event>()
 			   .Property(e => e.CreatedBy)
 			   .IsRequired();
-
-
 			modelBuilder.Entity<Registration>()
-				.HasOne(r => r.Event)
-				.WithMany()
-				.HasForeignKey(r => r.EventId)
-				.OnDelete(DeleteBehavior.Cascade); 
+			.Property(r => r.EventId)      
+			.IsRequired();
+
+			
 			modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 		}
 	}

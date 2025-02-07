@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using EventManagementSystem.API.Middleware;
+using FluentValidation;
+using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices();
@@ -25,11 +27,16 @@ builder.Services.AddCors(options =>
 		});
 });
 builder.Services.AddControllers();
-// ✅ Configure Swagger for JWT Authentication
+
 builder.Services.AddSwaggerGen(c =>
 {
 	c.SwaggerDoc("v1", new OpenApiInfo { Title = "Event Management API", Version = "v1" });
-
+	c.UseAllOfToExtendReferenceSchemas();
+	c.MapType<DateTime>(() => new OpenApiSchema
+	{
+		Type = "string",
+		Format = "date-time"  
+	});
 	c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 	{
 		Name = "Authorization",
